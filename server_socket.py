@@ -76,7 +76,7 @@ class ServerSocket:
         while True:
             client, client_address = self.SERVER.accept()
             self.clients.append(client)
-            print("%s:%s is connected." % client_address + f" Current Client Count: {len(self.clients)}")
+            print("\n%s:%s is connected." % client_address + f" Current Client Count: {len(self.clients)}")
             x = threading.Thread(target=self.client_handler, args=[client], daemon=True)
             x.start()
 

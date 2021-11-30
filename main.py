@@ -3,7 +3,7 @@ import json
 
 
 if __name__ == "__main__":
-    my_sock = ServerSocket(host='127.0.0.1', port=3131)
+    my_sock = ServerSocket(host='51.81.155.12', port=3131)
 
     @my_sock.add_event("login")
     def login(request):
