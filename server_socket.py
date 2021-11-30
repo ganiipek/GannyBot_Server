@@ -40,7 +40,7 @@ class Login:
             }
 
     def addOnlineList(self, account_id, client_ip):
-        self.ONLINEDICT.append({account_id:client_ip})
+        self.ONLINEDICT.append(account_id)
 
     def removeOnlineList(self, client_ip):
         for key, value in self.ONLINEDICT.copy().items():
