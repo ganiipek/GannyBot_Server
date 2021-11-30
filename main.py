@@ -7,12 +7,10 @@ if __name__ == "__main__":
 
     @my_sock.add_event("login")
     def login(request):
-        print("client: ", request)
         return json.dumps(my_sock.LOGIN.login(request))
 
     @my_sock.add_event("ping")
     def ping(request):
-        print("client: ", request)
         return json.dumps({'error':False, 'message':'pong'})
 
     my_sock.start()

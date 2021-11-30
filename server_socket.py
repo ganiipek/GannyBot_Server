@@ -5,13 +5,12 @@ from database import database
 
 class Login:
     def __init__(self):
-        self.ONLINEDICT = {}
+        self.ONLINEDICT = []
         self.db = database()
         self.db.connect()
 
     def login(self, request):
         result = self.db.select("SELECT * FROM users WHERE email=%s and password=%s", (request["email"], request["password"]))
-        print(result)
         if len(result) == 0:
             return {
                 "error": True,
@@ -29,12 +28,12 @@ class Login:
                     "message": "This account is already online."
                 }
             else:
+                self.addOnlineList(result[0]["id"], request["ip"])
                 return{
                     "error": False,
                     "message": "Login successful"
                 }
         else:
-            self.addOnlineList(result[0]["id"], request["ip"])
             return {
                 "error": True,
                 "message": "An unknown error has occurred!"
