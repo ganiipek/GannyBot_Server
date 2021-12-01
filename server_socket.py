@@ -5,7 +5,7 @@ from database import database
 
 class Login:
     def __init__(self):
-        self.ONLINEDICT = []
+        self.ONLINEDICT = {}
         self.db = database()
         self.db.connect()
 
@@ -28,7 +28,7 @@ class Login:
                     "message": "This account is already online."
                 }
             else:
-                self.addOnlineList(result[0]["id"], request["ip"])
+                self.addOnlineList(result[0]["id"], request["client"])
                 return{
                     "error": False,
                     "message": "Login successful"
@@ -39,17 +39,24 @@ class Login:
                 "message": "An unknown error has occurred!"
             }
 
-    def addOnlineList(self, account_id, client_ip):
-        self.ONLINEDICT.append(account_id)
+    def addOnlineList(self, account_id, client):
+        # self.ONLINEDICT.append({account_id:client_ip})
+        # print(client)
+        self.ONLINEDICT[account_id] = client
 
-    def removeOnlineList(self, client_ip):
+    def removeOnlineList(self, client):
         for key, value in self.ONLINEDICT.copy().items():
-            if value == client_ip:
-                self.ONLINEDICT.remove(key)
+            if value == client:
+                try:
+                    del self.ONLINEDICT[key]
+                    break
+                except KeyError as ex:
+                    print("No such key: '%s'" % ex.message)
 
     def checkList(self, account_id):
-        if account_id in self.ONLINEDICT:
-            return True
+        for key, value in self.ONLINEDICT.copy().items():
+            if key == account_id:
+                return True
 
         return False
 
@@ -106,6 +113,7 @@ class ServerSocket:
 
             try:
                 request["ip"], request["port"] = client.getpeername()
+                request["client"] = client
                 data = self.call_event_function(request["type"], request)
                 message = data
                 self.send_message(client, message.encode())
@@ -118,6 +126,7 @@ class ServerSocket:
                 break
 
         self.clients.remove(client)
+        self.LOGIN.removeOnlineList(client)
         print(f"Client {client.getpeername()} has disconnected. Current Client Count: {len(self.clients)}")
         client.close()
 
@@ -158,7 +167,6 @@ if __name__ == "__main__":
 
     @my_sock.add_event("login")
     def login(request):
-        print("client: ", request)
         return json.dumps(my_sock.LOGIN.login(request))
         
     my_sock.start()
